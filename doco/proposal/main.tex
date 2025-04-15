@@ -1,0 +1,25 @@
+\rightline{Task 7.4CR Custom Program Design}
+\leftline{\bf Design Overview for \it The BBC BASIC MAID \rm}
+\leftline{Name: Shade H. St Claire}
+\leftline{Student ID: 760657}
+\leftline{\bf Summary of Program}
+
+The British Broadcasting Corporations Beginner's All-purpose Symbolic Instruction Code (BBC BASIC) was first designed for the BBC Micro in 1981. BASIC
+here doubled both as a basic Operating System as well as a programming language for basic tasks. Similar to how SH or CMD might be percieved within a dumb
+terminal. This document, and subsequently the project which it describes is to be a subset of BBC BASIC V developed for Acord risc computers according
+to the Archimedes 400 Series BBC BASIC manual which this project treats as its reference. Again, BASIC serves as a `mini OS'. The compiler which is
+hereon described is intended to be... well a compiler. Divorced from this abition of kernel abstraction.
+
+However, provided time allows, it is not impossible to imagine a JIT system by which user input may be quickly converted to bytecode and then executed
+before prompting again. The major issues here though are that Python cannot simply interface the C-programmed VM as it would be innordinantly unsafe and
+slow to use system for this purpose. Another such issue is python's inherent trouble keeping up with compiled languages. I might propose embedding the
+VM as a library for this purpose, but such bridges may be crossed when they are reached.
+
+The Limited BASCI Machine Abstraction Interface Directive (or LBMAID) is the instruction set which has been developed for this project. 
+
+
+\leftline{\bf References}
+
+\leftline{\sl BBC BASIC --- Wikipedia : \rm en.wikipedia.org/wiki/BBC_BASIC}
+\leftline{\sl BBC BASIC Versions --- mdfs : \rm mdfs.net/Software/BBCBasic/Versions}
+\leftline{\sl Archimedes 400 Series BBC BASIC GUIDE --- Acorn Software : \rm BASIC manual of 1988}

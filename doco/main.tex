@@ -1,0 +1,279 @@
+\def\bcode{\begingroup\hrule\hbox\bgroup\vrule\hskip10pt\hsize=440pt\vbox\bgroup\smallskip}
+\def\ecode{\smallskip\egroup\vrule\egroup\hrule\endgroup}
+\def\entry #1 #2 [#3]{\begingroup\let\par\endgraf\vbox{\hbox to \hsize{\tt\hsize=439pt\vbox{\tt#1 \$#2}\hfil}\hbox{\hskip10pt\vbox{#3}}\hfil}\endgroup}
+
+
+\hsize=450pt
+
+\centerline{\bf Limited Basic Machine Application Interface Directions}
+\centerline{\sl LBMAID}
+\centerline{\tt Shade H. St Claire}
+
+\noindent LBMAID is the virtual machine/bytecode to be used in my prospected project implementing a subset of BBC BASIC. It is a limitted form of a much
+larger register machine first developed based on the Intel 8086. It thus inherets some of the quirks associated with the intel line of machines while
+(hopefully) being compact enough to be easily implemented over the course of a half-week.
+
+LBMAID consists of 9 which various instructions reference both indirectly or directly. Being a 32 bit bytecode designed to run on
+the test machine (a Toshiba satellite from 2009 running Windows 10 to... arguable success) the registers too are 32 bit. These registers are as so:
+
+\halign{\item{$\circ$}\tt # \rm & # & #\hfil \cr
+        0000 ACC & : & The accumulator.                 \cr
+        0001 B   & : & General purpose/array register.  \cr
+        0010 C   & : & Counter register.                \cr
+        0011 XI  & : & X index register.                \cr
+        0100 YI  & : & Y index register.                \cr
+        0101 SP  & : & Stack pointer.                   \cr
+        0110 BP  & : & Stack base pointer.              \cr
+        0111 FLG & : & Flags register.                  \cr
+        1000 IP  & : & Instruction pointer.             \cr
+}
+
+\noindent The use of these registers will become clear throughout the continuation of this document. We can begin the specifications ahead with that of a
+brief description of MAID-ASM, the assembly language assumed for the rest of this document. Its instructions are of the following form:
+
+\medskip
+\bcode
+        \leftline{\tt   instr = (instruction | directive) *(arguments *SP) comment}
+        \leftline{\tt comment = ';' *WHATEVER NL | '/*' *WHATEVER '*/'}
+\ecode
+\medskip
+
+\noindent An example might be:
+
+\medskip
+\bcode
+        \leftline{\tt LDI ACC 48h}
+        \leftline{\tt PUTCHAR}
+        \leftline{\tt LDI ACC 49h}
+        \leftline{\tt PUTCHAR}
+        \leftline{\tt LABEL .loop}
+        \leftline{\tt GETCHAR}
+        \leftline{\tt PUTCHAR}
+        \leftline{\tt CMP ACC 3h /* 3h is Ctr-C */}
+        \leftline{\tt JNZ .loop}
+\ecode
+\medskip
+
+\noindent Which would print `\tt HI\rm' and echo user input until Ctr-C is pressed. LBMAID does make quite a few concessions for the sake of time, for
+example many expected syntaxes are not to be present in this first version of LBMAID, i.e. \tt identifier: \rm for labels is not surported, nor is:
+\tt LOD ACC [B + 5] \rm for pointer dereference. Instead we might have: \tt LABEL identifier \rm or \tt LOD ACC +B 5 \rm.
+
+First we will define the various directives:
+
+\halign{\indent\tt # \rm & # & #\hfil\cr
+        LABEL \it name\/\tt     & : & Defines a label with the name \it name\/ \rm which is at compile time replaced\cr
+                                &   & with the current address in all immediate/memory calculations.\cr
+        ORG \it number\/\tt     & : & Sets the current address to \it number\rm.\cr
+        \$                      & : & Replaced by the current address at compile time.\cr
+        MEM \it amount\/\tt     & : & Sets the amount of allocated memory to be at least \it amount\rm.\cr
+        DB [\it bytes\tt]       & : & Defines the bytes at the current address as though an instruction had\cr
+                                &   & evalutated to them.\cr
+        DW [\it words\tt]       & : & Similar to \tt DB \rm except that values are in little endian double-byte format.\cr
+        DD [\it dwords\tt]      & : & Similar to \tt DB \rm except that values are in little endian quat-byte format.\cr
+}
+
+\noindent Before the instructions are defined it bears mentioning that the header consists of a quad-byte which determines the initial allocation memory
+(minimum) and is defined by the assembler automatically. This means all code is offset in binary by four bytes. It also bears mentioning that code is
+initially loaded at address 0x00000000 without regard for stack size/needs. Considering that the stack must grow downwards it is highly advised to move
+the code to an appropriate spot at runtime using a block copy command (\tt REP MOVS BYTE\rm).
+
+Now to define the instructions. These instructions are of the form:
+
+\medskip
+\leftline{\hskip10pt\tt NAME \$MAX\_ARG\_NUM (ARGUMENT\_TYPES)\hfill}
+\medskip
+
+Where MAX\_ARG\_NUM is the maximum number of arguments which may be passed to the instruction where ARGUMENT\_TYPES is a list of argument type signiatures.
+Each argument may be one of the following:
+
+\halign{\item{$\circ$}\tt # \rm & # & #\hfill\cr
+        R       & : & Any register.\cr
+        I       & : & Immediate.\cr
+        M       & : & Memory.\cr
+        SHORT   & : & 8  bit immediate.\cr
+        NEAR    & : & 16 bit immediate.\cr
+        FAR     & : & 32 bit immediate.\cr
+        BYTE    & : & The keyword \tt BYTE\rm.\cr
+        WORD    & : & The keyword \tt WORD\rm.\cr
+        DWORD   & : & The keyword \tt DWORD\rm.\cr
+        NULL    & : & An empty argument.\cr
+        A       & : & Accumulator.\cr
+        B       & : & B register.\cr
+        C       & : & C register.\cr
+        XI      & : & XI register.\cr
+        YI      & : & YI register.\cr
+        SP      & : & SP register.\cr
+        BP      & : & BP register.\cr
+        F       & : & FLG register.\cr
+        IP      & : & IP register.\cr
+}
+
+\noindent Memory access is also of one of the following modes:
+
+\halign{\item{$\circ$}\tt # \rm & # & #\hfill\cr
+        0000 immediate          & : & Value at the address of the provided immediate.\cr
+        0001 B                  & : & Value pointed to by B.\cr
+        0010 XI                 & : & Value pointed to by XI.\cr
+        0011 YI                 & : & Value pointed to by YI.\cr
+        0100 BP                 & : & Value pointed to by BP.\cr
+        0101 + B immediate      & : & Value at B + the immidiate provided.\cr
+        0110 + XI immediate     & : & Value at XI + the immediate provided.\cr
+        0111 + BP immediate     & : & Value at BP + the immediate provided.\cr
+        1000 $\langle$ B        & : & Value at B $\langle\langle$ 1.\cr
+        1001 $\langle\langle$ B & : & Value at B $\langle\langle$ 2.\cr
+}
+
+\vfill\break
+\noindent Finally we may consider the instructions of LBMAID. They are as so:
+
+\newcount\entrynum
+\def\bentries{\halign\bgroup\tt## & \tt## & \tt##\hfill\cr}
+\def\eentries{\egroup}
+\def\entry #1 #2 (#3){#1 & #2 & (#3)\cr}
+
+\bentries
+\entry 00 ADD (A, I)
+\entry 01 ADV (C, I)
+\entry 02 ADD (A, M)
+\entry 03 ADD (A, B)
+
+\entry 04 AND (A, I)
+\entry 05 AND (A, M)
+\entry 06 AND (A, B)
+
+\entry 07 CALL (SHORT)
+\entry 08 CALL (NEAR)
+\entry 09 CALL (FAR)
+
+\entry 0A CMP (A, B)
+\entry 0B CMP (A, I)
+\entry 0C CMP (A, M)
+
+\entry 0E CMPS (BYTE)
+\entry 0F CMPS (WORD)
+\entry 10 CMPS (DWORD)
+
+\entry 11 CURPOS ()
+
+\entry 12 FADD (R, R)
+
+\entry 13 FSUB (R, R)
+
+\entry 14 GETCHAR ()
+
+\entry 15 HLT ()
+
+\entry 16 JC (SHORT)
+
+\entry 17 JNC (SHORT)
+
+\entry 18 JZ (SHORT)
+
+\entry 19 JNZ (SHORT)
+
+\entry 1A JO (SHORT)
+
+\entry 1B JS (SHORT)
+
+\entry 1C JMP (SHORT)
+\entry 1D JMP (NEAR)
+\entry 1E JMP (FAR)
+
+\entry 1F LODS (BYTE)
+\entry 20 LODS (WORD)
+\entry 21 LODS (DWORD)
+
+\entry 22 LOOP (SHORT)
+
+\entry 23 LOOPZ (SHORT)
+
+\entry 24 LOOPNZ (SHORT)
+
+\entry 25 LOD (A, M)
+\entry 26 LOD (C, M)
+\entry 27 LOD (R, M)
+
+\entry 28 LDI (A, I)
+\entry 29 LDI (R, I)
+
+\entry 2A MOV (A, R)
+\entry 2B MOV (R, R)
+\entry 2C MOV (SP, BP)
+\entry 2D MOV (BP, SP)
+
+\entry 2E MOVS (BYTE)
+\entry 2F MOVS (WORD)
+\entry 20 MOVS (DWORD)
+
+\entry 21 NOT (A)
+
+\entry 32 OR (A, I)
+\entry 33 OR (A, R)
+
+\entry 34 POP (A)
+\entry 35 POP (M)
+\entry 36 POP (BP)
+
+\entry 37 POPF ()
+
+\entry 38 PUSH (A)
+\entry 39 PUSH (I)
+\entry 3A PUSH (M)
+\entry 3B PUSH (BP)
+
+\entry 4C REP/REPZ ()
+
+\entry 3D REPNZ ()
+
+\entry 3E RET (SHORT)
+
+\entry 3F SCAS (BYTE)
+\entry 40 SCAS (WORD)
+\entry 41 SCAS (DWORD)
+
+\entry 42 STO (M, A)
+\entry 43 STO (M, I)
+
+\entry 44 STOS (BYTE)
+\entry 45 STOS (WORD)
+\entry 46 STOS (DWORD)
+
+\entry 47 SUB (A, I)
+\entry 48 SUV (C, I)
+\entry 49 SUB (A, M)
+\entry 4A SUB (A, B)
+
+\entry 4B TEST (A, B)
+\entry 4C TEST (A, I)
+\entry 4D TEST (A, M)
+
+\entry 4E ZERO (R)
+
+\entry 4F XOR (A, B)
+
+\entry 50 PUTCHAR ()
+
+\entry 51 PUSHF ()
+\cr
+\eentries
+
+\noindent An example program follows:
+
+\medskip
+\bcode
+        \leftline{\tt LDI XI message}
+        \leftline{\tt /* Size optimized instructions to load string length into C and increment XI to}
+        \leftline{\tt\qquad the appropriate length */}
+        \leftline{\tt LOD C \% XI ; \% preceeds mem arguments for clarity}
+        \leftline{\tt LODS DWORD}
+        \leftline{\tt LABEL .loop}
+        \leftline{\tt\qquad LODS BYTE}
+        \leftline{\tt\qquad PUTCHAR}
+        \leftline{\tt LOOP .loop}
+        \leftline{\tt HLT}
+        \leftline{\tt LABEL message}
+        \leftline{\tt DD 0Ch\% ; \% also proceeds lists}
+        \leftline{\tt DB 'Hello World!'\%}
+\ecode
+
+\bye

@@ -1,0 +1,11 @@
+LDI XI message
+LOD C % XI
+LODS DWORD
+LABEL .loop
+        LODS BYTE
+        PUTCHAR
+LOOP .loop
+HLT
+LABEL message
+DD 0Ch%
+DB 'Hello World!'%

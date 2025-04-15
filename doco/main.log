@@ -1,0 +1,51 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdftex 2025.3.28)  16 APR 2025 05:52
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**main.tex
+(./main.tex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+\entrynum=\count27
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(643.20255+0.8333)x450.0
+.\glue(\topskip) 3.05556
+.\hbox(6.94444+1.94444)x450.0, glue set 143.52725fil
+..\tenrm F
+..\tenrm i
+..\tenrm n
+..\tenrm a
+..\tenrm l
+..etc.
+.\glue(\baselineskip) 3.11111
+.\hbox(6.94444+1.38887)x115.499
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+1.38887)x20.99982
+...\tentt 0
+...\tentt 0
+...\glue 5.24995
+...\glue 5.24995
+..\glue(\tabskip) 0.0
+..\hbox(6.94444+1.38887)x52.49954
+...\tentt A
+...\tentt D
+...\tentt D
+...\glue 5.24995
+...\glue 5.24995
+..\glue(\tabskip) 0.0
+..etc.
+.\glue(\baselineskip) 3.66669
+.etc.
+
+ [3]
+[4] )</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
+re/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmsl10.pfb></usr/share/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmti10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on main.pdf (4 pages, 88153 bytes).
+PDF statistics:
+ 41 PDF objects out of 1000 (max. 8388607)
+ 28 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
