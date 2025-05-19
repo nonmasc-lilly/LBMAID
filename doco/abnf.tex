@@ -1,0 +1,33 @@
+\def\tag#1{$\langle$#1$\rangle$}
+\def\loc#1{\hbox to \hsize{\tt#1\hfill}}
+
+\loc{\tag{program}      ::= \tag{primary} | \tag{program}}
+\loc{\tag{primary}      ::= \tag{def} | \tag{statement}}
+\loc{\tag{def}          ::= "def" \tag{whitespace} \tag{proc iden} \tag{EOL} \tag{pblock} \tag{EOL} "ENDPROC" \tag{EOL}}
+\loc{\tag{pblock}       ::= \tag{statement} | \tag{local} | \tag{statement} \tag{EOL} \tag{pblock} | \tag{local} \tag{EOL} \tag{pblock}}
+\loc{\tag{local}        ::= "LOCAL" \tag{whitespace} \tag{typed identifier}}
+\loc{\tag{statement}    ::= \tag{let} | \tag{if} | \tag{while} | \tag{for} | \tag{case} | \tag{goto} | \tag{dim} | \tag{print} |}
+\loc{\qquad\tag{input} | \tag{statement} ":" \tag{statement}}
+\loc{\tag{let}          ::= "LET" \tag{whitespace} \tag{typed identifier} \tag{whitespace} "=" \tag{whitespace}}
+\loc{\qquad\tag{expression}}
+\loc{\tag{if}           ::= "IF" \tag{whitespace} \tag{expression} \tag{whitespace} "THEN" \tag{whitespace} \tag{statement} |}
+\loc{\qquad"IF" \tag{whitespace} \tag{expression} \tag{whitespace} "THEN" \tag{whitespace} \tag{statement} "ELSE"}
+\loc{\qquad\tag{whitespace} \tag{statement} | "IF" \tag{whitespace} \tag{expression} \tag{whitespace} "THEN" \tag{EOL}}
+\loc{\qquad\tag{block} \tag{EOL} "ELSE" \tag{EOL} \tag{block} \tag{EOL} "ENDIF"}
+\loc{\tag{while} ::= "WHILE" \tag{whitespace} \tag{expression} \tag{EOL} \tag{block} \tag{EOL} "ENDWHILE"}
+\loc{\tag{for} ::= \tag{for header} \tag{EOL} \tag{block} \tag{EOL} "NEXT" \tag{whitespace} \tag{typed identifier}}
+\loc{\tag{for header} ::= "FOR" \tag{whitespace} \tag{typed identifier} \tag{whitespace} "=" \tag{whitespace}}
+\loc{\qquad\tag{expression} \tag{whitespace} \tag{for to} \tag{whitespace} \tag{for step}}
+\loc{\tag{for to} ::= "TO" \tag{whitespace} \tag{expression}}
+\loc{\tag{for step} ::= "" | "STEP" \tag{whitespace} \tag{expression}}
+\loc{\tag{case} ::= "CASE" \tag{whitespace} \tag{expression}
+
+\loc{\tag{type} ::= "\%" | "\$" | ""}
+\loc{\tag{typed identifier} ::= \tag{identifier} \tag{type}}
+\loc{\tag{proc iden}    ::= "PROC" \tag{identifier}}
+\loc{\tag{identifier}   ::= \tag{letter} \tag{identifier cont.}}
+\loc{\tag{identifier cont.} ::= "" | \tag{letter} | \tag{digit} | "\_" | \tag{letter} \tag{identifier cont.} |}
+\loc{\qquad\tag{digit} \tag{identifier cont.} | "\_" \tag{identifier cont.}}
+\loc{\tag{whitespace}   ::= \tag{SP} | \tag{TAB} | \tag{SP} \tag{whitespace} | \tag{TAB} \tag{whitespace}}
+
+\bye
